@@ -1,5 +1,6 @@
 import express from "express";
 import db from "../libs/db.js";
+import { getStepById, updateStepOrder } from "../handlers/step.js";
 const router = express.Router();
 
 /**
@@ -21,6 +22,22 @@ const router = express.Router();
  *  order
  * }
  */
+
+// get all steps
+router.get("/", async (req, res) => {
+  const { taskId } = req.query;
+
+  const steps = await db.step.findMany({
+    where: {
+      taskId: Number(taskId),
+    },
+  });
+
+  res.json({
+    success: true,
+    data: steps,
+  });
+});
 
 // Get all tasks
 router.post("/", async (req, res) => {
@@ -44,6 +61,50 @@ router.post("/", async (req, res) => {
   });
 });
 
-//
+// Delete a step
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  await db.step.delete({
+    where: { id: Number(id) },
+  });
+});
+
+// Update a step
+router.patch("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const step = await db.step.findUnique({
+    where: { id: Number(id) },
+  });
+
+  if (!step) {
+    res.status(404).json({
+      success: false,
+      message: "Step not found",
+    });
+  }
+});
+
+// update order
+router.patch("/:id/order", async (req, res) => {
+  const { id } = req.params;
+  const { order } = req.body;
+
+  const step = await getStepById(id);
+
+  if (!step) {
+    return res.status(404).json({
+      success: false,
+      message: "Step not found",
+    });
+  }
+
+  const updatedStep = await updateStepOrder(id, order);
+
+  res.json({
+    success: true,
+    data: updatedStep,
+  });
+});
 
 export default router;
