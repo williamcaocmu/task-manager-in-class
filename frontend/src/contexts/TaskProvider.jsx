@@ -1,42 +1,42 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+import {
+  addTaskAPI,
+  deleteTaskAPI,
+  getTasksAPI,
+  updateTaskAPI,
+} from "../services/tasks";
 
-const TASKS = [
-  {
-    id: 1,
-    name: "Learn React",
-  },
-  {
-    id: 2,
-    name: "Learn Nodejs",
-  },
-];
+// CRUD = Create, Read, Update, Delete
 
 export const TaskContext = createContext();
 
 export const TaskContextProvider = ({ children }) => {
-  const [tasks, setTasks] = useState(TASKS);
+  const [tasks, setTasks] = useState([]);
 
-  const deleteTask = (taskId) => {
-    setTasks(tasks.filter((task) => task.id !== taskId));
+  const fetchTasks = async () => {
+    const data = await getTasksAPI();
+    if (data.success) {
+      setTasks(data.tasks);
+    }
   };
 
-  const addTask = (taskName) => {
-    const newTask = {
-      id: tasks.length + 1,
-      name: taskName,
-    };
-    setTasks([...tasks, newTask]);
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const deleteTask = async (taskId) => {
+    await deleteTaskAPI(taskId);
+    fetchTasks();
   };
 
-  const editTaskName = (id, taskName) => {
-    setTasks(
-      tasks.map((task) => {
-        if (task.id === id) {
-          return { ...task, name: taskName };
-        }
-        return task;
-      })
-    );
+  const addTask = async (taskName) => {
+    await addTaskAPI(taskName);
+    fetchTasks();
+  };
+
+  const editTaskName = async (id, taskName) => {
+    await updateTaskAPI(id, taskName);
+    fetchTasks();
   };
 
   return (

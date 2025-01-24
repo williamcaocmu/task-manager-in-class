@@ -31,6 +31,9 @@ router.get("/", async (req, res) => {
     where: {
       taskId: Number(taskId),
     },
+    orderBy: {
+      order: "asc",
+    },
   });
 
   res.json({
@@ -39,7 +42,6 @@ router.get("/", async (req, res) => {
   });
 });
 
-// Get all tasks
 router.post("/", async (req, res) => {
   const { name, order, taskId } = req.body;
 
@@ -72,10 +74,9 @@ router.delete("/:id", async (req, res) => {
 // Update a step
 router.patch("/:id", async (req, res) => {
   const { id } = req.params;
+  const { name, finished } = req.body;
 
-  const step = await db.step.findUnique({
-    where: { id: Number(id) },
-  });
+  const step = await getStepById(id);
 
   if (!step) {
     res.status(404).json({
@@ -83,6 +84,16 @@ router.patch("/:id", async (req, res) => {
       message: "Step not found",
     });
   }
+
+  const updatedStep = await db.step.update({
+    where: { id: Number(id) },
+    data: { name, finished },
+  });
+
+  res.json({
+    success: true,
+    data: updatedStep,
+  });
 });
 
 // update order

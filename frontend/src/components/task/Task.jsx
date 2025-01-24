@@ -1,7 +1,11 @@
 import { useContext, useState } from "react";
 import { TaskContext } from "../../contexts/TaskProvider";
+import StepList from "../step/StepList";
+import { StepContextProvider } from "../../contexts/StepProvider";
+import caretIcon from "../../assets/caret.svg";
 
 const Task = ({ task }) => {
+  const [open, setOpen] = useState(false);
   const [isEditing, setEditing] = useState(false);
   const [taskName, setTaskName] = useState("");
   const { deleteTask, editTaskName } = useContext(TaskContext);
@@ -20,6 +24,12 @@ const Task = ({ task }) => {
   return (
     <li className="card">
       <header className="card-header">
+        <span
+          className={`icon-button card-expand ${open ? "card-expanded" : ""} `}
+          onClick={() => setOpen(!open)}
+        >
+          <img src={caretIcon} alt="Edit" />
+        </span>
         {isEditing ? (
           <form onSubmit={handleEditTaskName}>
             <input
@@ -43,6 +53,10 @@ const Task = ({ task }) => {
           <button className="card-control">Delete</button>
         </li>
       </ul>
+
+      <StepContextProvider taskId={task.id} open={open}>
+        <StepList />
+      </StepContextProvider>
     </li>
   );
 };

@@ -2,6 +2,9 @@ import db from "../libs/db.js";
 
 export const findTasks = async (req, res) => {
   const tasks = await db.task.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
     include: {
       steps: true,
     },
