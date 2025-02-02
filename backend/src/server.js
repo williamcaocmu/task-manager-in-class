@@ -24,6 +24,7 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.json());
 
+console.log(process.env.JWT_SECRET);
 // Routes
 app.use("/api/tasks", taskRoutes);
 app.use("/api/steps", stepRoutes);
