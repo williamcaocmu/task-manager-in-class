@@ -6,6 +6,11 @@ import cors from "cors";
 
 import taskRoutes from "./routes/tasks.js";
 import stepRoutes from "./routes/steps.js";
+import userRoutes from "./modules/users/users.route.js";
+import authRoutes from "./modules/auth/auth.route.js";
+import tagRoutes from "./modules/tags/tags.route.js";
+import articleRoutes from "./modules/articles/articles.route.js";
+import commentRoutes from "./modules/comments/comments.route.js";
 
 const app = express();
 const port = 3000;
@@ -22,7 +27,11 @@ app.use(bodyParser.json());
 // Routes
 app.use("/api/tasks", taskRoutes);
 app.use("/api/steps", stepRoutes);
-
+app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/tags", tagRoutes);
+app.use("/api/articles", articleRoutes);
+app.use("/api/comments", commentRoutes);
 // Basic route
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to Task Manager API" });
